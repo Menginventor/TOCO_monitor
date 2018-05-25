@@ -19,4 +19,9 @@ void homepage_draw() {
     text("Please connect your device", width/2, height/2);
     scan_port();
   }
+  else  if (connecting.equals("connected")) {
+
+    text("Connecting...", width/2, height/2);
+ 
+  }
 }

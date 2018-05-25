@@ -18,16 +18,17 @@ public class TOCO_monitor extends PApplet {
 
 
 
-
-Serial myPort;  // Create object from Serial class
+PrintWriter output;
+Serial Serial_port;  // Create object from Serial class
 PImage img1;
 int screen = 0;
 PFont medium;
 String connecting = "disconnected";
+boolean first_packet = true;
+int data_rx_timer = 0;
 public void setup() {
-  //size(1280, 680);
-  frame.setLocation(0, 0);
   
+  //fullScreen();
   //frame.setResizable(true);
 
   img1 = loadImage("img1.jpg");
@@ -35,8 +36,17 @@ public void setup() {
   medium = createFont("HelveticaNeue Medium.ttf", 24);
   String os=System.getProperty("os.name");
   println(os);
+  output = createWriter("testing.txt"); 
+  output.println("Operating_sys : "+os);
+  output.flush(); // Writes the remaining data to the file
+  output.close(); // Finishes the file
 }
 public void draw() {
+  if (connecting.equals("connected") && millis() - data_rx_timer>2000) {
+     Serial_port.stop();
+     connecting = "disconnected";
+     println("disconnected");
+  }
   switch(screen) {
   case 0:
     homepage_draw();
@@ -45,32 +55,15 @@ public void draw() {
 }
 
 public void serialEvent(Serial p) { 
-  println("Serial event");
-  //inString = p.readString();
+  data_rx_timer = millis();
+  if (first_packet) {
+    first_packet = false;
+    
+    return;
+  }
+  println(p.readString());
 } 
 String [] old_port_list = Serial.list();
-public void scan_port() {
-  String [] new_port_list = Serial.list();
-  if (old_port_list.length != new_port_list.length) {
-    if (old_port_list.length < new_port_list.length)
-      println("Plug device");
-    if (connecting.equals("disconnected")) {
-      for (int i = 0; i<new_port_list.length; i++ ) {
-        boolean new_port = true;
-        for (int j = 0; j<old_port_list.length; j++ ) {
-          if (new_port_list[i].equals(old_port_list[j])  == true) {
-            new_port = false;
-            break;
-          }
-        }
-        if (new_port) {
-          println(new_port_list[i]) ;
-        }
-      }
-    }
-  }
-  old_port_list = Serial.list();
-}
 public void homepage_draw() {
   image(img1, 0, 0);
   float dialog_width = 700;
@@ -92,8 +85,48 @@ public void homepage_draw() {
     text("Please connect your device", width/2, height/2);
     scan_port();
   }
+  else  if (connecting.equals("connected")) {
+
+    text("Connecting...", width/2, height/2);
+ 
+  }
 }
-  public void settings() {  fullScreen(); }
+public void scan_port() {
+  String [] new_port_list = Serial.list();
+  if (old_port_list.length != new_port_list.length) {
+    if (old_port_list.length < new_port_list.length)
+      println("Plug device");
+    if (connecting.equals("disconnected")) {
+      for (int i = 0; i<new_port_list.length; i++ ) {
+        boolean new_port = true;
+        for (int j = 0; j<old_port_list.length; j++ ) {
+          if (new_port_list[i].equals(old_port_list[j])  == true) {
+            new_port = false;
+            break;
+          }
+        }
+        if (new_port) {
+          if (!new_port_list[i].substring(0, 8).equals("/dev/tty")) {//for mac osx
+            println(new_port_list[i]) ;
+            try {
+              Serial_port = new Serial(this, new_port_list[i], 9600);
+              Serial_port.bufferUntil('\n');
+              first_packet = true;
+            }
+            catch(Exception e) {
+            }
+            connecting = "connected";
+            data_rx_timer = millis();
+            break;
+          }
+        }
+      }
+    }
+  }
+  old_port_list = Serial.list();
+}
+
+  public void settings() {  size(1280, 800); }
   static public void main(String[] passedArgs) {
     String[] appletArgs = new String[] { "TOCO_monitor" };
     if (passedArgs != null) {
