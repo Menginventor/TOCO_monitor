@@ -3,7 +3,7 @@ void homepage_draw() {
   float dialog_width = 700;
   float dialog_height = 500;
   rectMode(CENTER);
-  fill(#D8D8D6, 220);
+  fill(#D8D8D6, 200);
   noStroke();
   rect(width/2, height/2, dialog_width, dialog_height, 50);
 

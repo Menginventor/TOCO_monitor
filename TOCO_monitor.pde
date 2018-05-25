@@ -8,6 +8,8 @@ PFont medium;
 String connecting = "disconnected";
 void setup() {
   size(1280, 800);
+  //fullScreen();
+  //frame.setResizable(true);
 
   img1 = loadImage("img1.jpg");
   img1.resize(width, img1.height*width/height);
@@ -43,7 +45,9 @@ void scan_port() {
           }
         }
         if (new_port) {
-          println(new_port_list[i]) ;
+          if (!new_port_list[i].substring(0, 8).equals("/dev/tty")) {//for mac osx
+            println(new_port_list[i]) ;
+          }
         }
       }
     }
