@@ -13,7 +13,7 @@ void setup() {
   img1.resize(width, img1.height*width/height);
   medium = createFont("HelveticaNeue Medium.ttf", 24);
   String os=System.getProperty("os.name");
-  println("os");
+  println(os);
 }
 void draw() {
   switch(screen) {
