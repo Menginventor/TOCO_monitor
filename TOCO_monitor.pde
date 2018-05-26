@@ -9,10 +9,12 @@ String connecting = "disconnected";
 boolean first_packet = true;
 int data_rx_timer = 0;
 boolean recording = false;
+int overall_index = 0;
 void setup() {
   frameRate(15);
   size(1280, 800);
   //fullScreen();
+  println(width);
   //frame.setResizable(true);
 
   img1 = loadImage("img1.jpg");
@@ -20,8 +22,9 @@ void setup() {
   medium = createFont("HelveticaNeue Medium.ttf", 24);
   String os=System.getProperty("os.name");
   println(os);
+  clear_buffer();
   /*
-  output = createWriter("testing.txt"); 
+  output = createWriter("testing-####.txt"); 
   output.println("Operating_sys : "+os);
   output.flush(); // Writes the remaining data to the file
   output.close(); // Finishes the file
@@ -59,7 +62,7 @@ void serialEvent(Serial p) {
   data_rx_timer = millis();
   if (first_packet) {
     first_packet = false;
-
+    clear_buffer();
     return;
   }
   String data = p.readString();
