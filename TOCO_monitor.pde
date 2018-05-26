@@ -12,9 +12,9 @@ boolean recording = false;
 int overall_index = 0;
 void setup() {
   frameRate(15);
-  size(1280, 800);
-  //fullScreen();
-  println(width);
+  //size(1280, 800);
+  fullScreen();
+
   //frame.setResizable(true);
 
   img1 = loadImage("img1.jpg");
@@ -33,9 +33,11 @@ void setup() {
 }
 void draw() {
   /*remove this block*/
+  /*
   if (connecting.equals("disconnected")) {
     connect();
   }
+  */
   /*remove this block*/
   
   if (connecting.equals("connected") && millis() - data_rx_timer>2000) {
