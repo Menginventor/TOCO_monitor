@@ -1,4 +1,25 @@
+void connect() {
+  String [] new_port_list = Serial.list();
+  for (int i = 0; i<new_port_list.length; i++ ) {
+    if (new_port_list[i].equals("/dev/cu.SLAB_USBtoUART")  == true) {
+      try {
+        Serial_port = new Serial(this, new_port_list[i], 9600);
+        Serial_port.bufferUntil('\n');
+        first_packet = true;
+      }
+      catch(Exception e) {
+        return;
+      }
+      connecting = "connected";
+      data_rx_timer = millis();
+      break;
+    }
+  }
+}
 void scan_port() {
+
+
+
   String [] new_port_list = Serial.list();
   if (old_port_list.length != new_port_list.length) {
     if (old_port_list.length < new_port_list.length)
@@ -21,6 +42,7 @@ void scan_port() {
               first_packet = true;
             }
             catch(Exception e) {
+              return;
             }
             connecting = "connected";
             data_rx_timer = millis();
